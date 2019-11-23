@@ -46,6 +46,14 @@ from .aliexpress import AliExpressLiveIE
 from .apa import APAIE
 from .aparat import AparatIE
 from .appleconnect import AppleConnectIE
+from .addatimes import (
+    AddatimesIE,
+    AddaTimesShowIE,
+)
+from .Hoichoi import (
+    HoichoiShowIE,
+    HoichoiIE
+)
 from .appletrailers import (
     AppleTrailersIE,
     AppleTrailersSectionIE,
@@ -143,6 +151,10 @@ from .businessinsider import BusinessInsiderIE
 from .buzzfeed import BuzzFeedIE
 from .byutv import BYUtvIE
 from .c56 import C56IE
+from .calm import (
+    CalmIE,
+    CalmPlayListIE,
+)
 from .camdemy import (
     CamdemyIE,
     CamdemyFolderIE

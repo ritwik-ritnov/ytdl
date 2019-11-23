@@ -17,7 +17,7 @@ from ..utils import (
 
 
 class ViewLiftBaseIE(InfoExtractor):
-    _DOMAINS_REGEX = r'(?:snagfilms|snagxtreme|funnyforfree|kiddovid|winnersview|(?:monumental|lax)sportsnetwork|vayafilm)\.com|hoichoi\.tv'
+    _DOMAINS_REGEX = r'(?:snagfilms|snagxtreme|funnyforfree|kiddovid|winnersview|(?:monumental|lax)sportsnetwork|vayafilm)\.com'
 
 
 class ViewLiftEmbedIE(ViewLiftBaseIE):
