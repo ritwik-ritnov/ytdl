@@ -167,7 +167,10 @@ class HoichoiShowsRipperIE(HoichoiBaseIE):
                             break
                     if isfound == 0:
                         if "films" not in perma_link:
-                            ie_key = HoichoiShowIE.ie_key()
+                            if "fims" in perma_link:
+                                ie_key = HoichoiIE.ie_key()
+                            else:
+                                ie_key = HoichoiShowIE.ie_key()
                         else:
                             ie_key = HoichoiIE.ie_key()
                         entry = {
