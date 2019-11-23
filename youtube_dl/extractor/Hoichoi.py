@@ -24,7 +24,7 @@ class HoichoiBaseIE(InfoExtractor):
 
 
 class HoichoiIE(HoichoiBaseIE):
-    _VALID_URL = r'https?://www\.hoichoi\.tv/(?:films/title|videos)/(?P<id>[^/]+)'
+    _VALID_URL = r'https?://www\.hoichoi\.tv/(?:films/title|videos|films/ttitle)/(?P<id>[^/]+)'
 
     def _real_extract(self, url):
         display_id = re.match(self._VALID_URL, url).groups()
@@ -131,9 +131,11 @@ class HoichoiShowIE(HoichoiBaseIE):
         return self.playlist_result(entries, display_id, p_title)
 
 class HoichoiShowsRipperIE(HoichoiBaseIE):
-    _VALID_URL = r'https?://www\.hoichoi\.tv/shows'
+    _VALID_URL = r'https?://www\.hoichoi\.tv/(?P<id>[^/]+)'
 
     def _real_extract(self, url):
+        display_id = re.match(self._VALID_URL, url).groups()
+
         token = HoichoiBaseIE._get_token(self)
 
         headers = {
@@ -141,7 +143,7 @@ class HoichoiShowsRipperIE(HoichoiBaseIE):
         }
 
         response = self._download_json(
-            'https://prod-api-cached.viewlift.com/content/pages?path=/shows&languageCode=&includeContent=true&site=hoichoitv', 'shows', note='fetching all shows',
+            'https://prod-api-cached.viewlift.com/content/pages?path=/%s&languageCode=&includeContent=true&site=hoichoitv'% display_id, display_id, note='fetching...',
             headers=headers)
 
         if response:
@@ -158,18 +160,22 @@ class HoichoiShowsRipperIE(HoichoiBaseIE):
                     show_id = gist['id']
                     show_title = gist['title']
                     perma_link = gist['permalink']
-                    isFound = 0
+                    isfound = 0
                     for entry_node in entries:
                         if entry_node.get('title') == show_title:
-                            isFound = 1
+                            isfound = 1
                             break
-                    if isFound == 0:
+                    if isfound == 0:
+                        if "films" not in perma_link:
+                            ie_key = HoichoiShowIE.ie_key()
+                        else:
+                            ie_key = HoichoiIE.ie_key()
                         entry = {
                             '_type': 'url_transparent',
                             'id': show_id,
                             'title': show_title,
                             'url': 'https://www.hoichoi.tv%s' % perma_link,
-                            'ie_key': HoichoiShowIE.ie_key(),
+                            'ie_key': ie_key,
                             }
                         entries.append(entry)
 
