@@ -130,3 +130,48 @@ class HoichoiShowIE(HoichoiBaseIE):
 
         return self.playlist_result(entries, display_id, p_title)
 
+class HoichoiShowsRipperIE(HoichoiBaseIE):
+    _VALID_URL = r'https?://www\.hoichoi\.tv/shows'
+
+    def _real_extract(self, url):
+        token = HoichoiBaseIE._get_token(self)
+
+        headers = {
+            'authorization': token
+        }
+
+        response = self._download_json(
+            'https://prod-api-cached.viewlift.com/content/pages?path=/shows&languageCode=&includeContent=true&site=hoichoitv', 'shows', note='fetching all shows',
+            headers=headers)
+
+        if response:
+            modules = response['modules']
+            content_data = []
+            for m in modules:
+                if m.get('moduleType') == 'CuratedTrayModule':
+                    content_data.append(m['contentData'])
+
+            entries = []
+            for content in content_data:
+                for data in content:
+                    gist = data['gist']
+                    show_id = gist['id']
+                    show_title = gist['title']
+                    perma_link = gist['permalink']
+                    isFound = 0
+                    for entry_node in entries:
+                        if entry_node.get('title') == show_title:
+                            isFound = 1
+                            break
+                    if isFound == 0:
+                        entry = {
+                            '_type': 'url_transparent',
+                            'id': show_id,
+                            'title': show_title,
+                            'url': 'https://www.hoichoi.tv%s' % perma_link,
+                            'ie_key': HoichoiShowIE.ie_key(),
+                            }
+                        entries.append(entry)
+
+        return self.playlist_result(entries, show_id, show_id)
+

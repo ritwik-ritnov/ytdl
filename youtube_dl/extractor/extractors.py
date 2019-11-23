@@ -51,8 +51,9 @@ from .addatimes import (
     AddaTimesShowIE,
 )
 from .Hoichoi import (
+    HoichoiIE,
     HoichoiShowIE,
-    HoichoiIE
+    HoichoiShowsRipperIE,
 )
 from .appletrailers import (
     AppleTrailersIE,
