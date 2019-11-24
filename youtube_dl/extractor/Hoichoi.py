@@ -24,7 +24,7 @@ class HoichoiBaseIE(InfoExtractor):
 
 
 class HoichoiIE(HoichoiBaseIE):
-    _VALID_URL = r'https?://www\.hoichoi\.tv/(?:fims/title|films/title|videos|films/ttitle)/(?P<id>[^/]+)'
+    _VALID_URL = r'https?://www\.hoichoi\.tv/(?:videos|fims/title|films/title|videos|films/ttitle)/(?P<id>[^/]+)'
 
     def _real_extract(self, url):
         display_id = re.match(self._VALID_URL, url).groups()
@@ -167,7 +167,7 @@ class HoichoiShowsRipperIE(HoichoiBaseIE):
                             break
                     if isfound == 0:
                         if "films" not in perma_link:
-                            if "fims" in perma_link:
+                            if "fims" in perma_link or "videos" in perma_link:
                                 ie_key = HoichoiIE.ie_key()
                             else:
                                 ie_key = HoichoiShowIE.ie_key()
