@@ -24,14 +24,14 @@ class AddatimesIE(InfoExtractor):
     }]
 
     _API_BASE = 'https://www.addatimes.com/api'
-    _XSRF_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5hZGRhdGltZXMuY29tL2FwaS9sb2dpbiIsImlhdCI6MTU3MzgzMTM1NCwiZXhwIjoxNTc0MTkxMzU0LCJuYmYiOjE1NzM4MzEzNTQsImp0aSI6IkFuNGlqMDlXVkRvTlVJaHYiLCJzdWIiOjMzODU5NCwicHJ2IjoiODdlMGFmMWVmOWZkMTU4MTJmZGVjOTcxNTNhMTRlMGIwNDc1NDZhYSIsImRldGFpbHMiOnsiaWQiOjMzODU5NCwiZmlyc3RfbmFtZSI6bnVsbCwibGFzdF9uYW1lIjpudWxsLCJlbWFpbCI6InZpdGVqYWNAbGlueC5lbWFpbCIsInBob25lIjoiIiwicGljdHVyZSI6bnVsbH19.rWaxb5d2n9wbEYFhMnqQXMZ_VRCVdA0AuMcV28UQm7U'
+    _XSRF_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5hZGRhdGltZXMuY29tL2FwaS9sb2dpbiIsImlhdCI6MTU3NDU3NjYyOSwiZXhwIjoxNTc0OTM2NjI5LCJuYmYiOjE1NzQ1NzY2MjksImp0aSI6IjdoZGw3TWxaNE5GYmh1UjMiLCJzdWIiOjMzODU5NCwicHJ2IjoiODdlMGFmMWVmOWZkMTU4MTJmZGVjOTcxNTNhMTRlMGIwNDc1NDZhYSIsImRldGFpbHMiOnsiaWQiOjMzODU5NCwiZmlyc3RfbmFtZSI6bnVsbCwibGFzdF9uYW1lIjpudWxsLCJlbWFpbCI6InZpdGVqYWNAbGlueC5lbWFpbCIsInBob25lIjoiIiwicGljdHVyZSI6bnVsbH19.sp1-4CqfQg_5qctoJ2wwnOMT6j1Pv-TF4_h05JGAwcI'
 
     def _handle_error(self, response):
         if not isinstance(response, dict):
             return
         error = response.get('error')
         if error:
-            error_str = 'calm.com returned error - %s' % error
+            error_str = 'addatimes returned error - %s' % error
             raise ExtractorError(error_str, expected=True)
 
     def _real_initialize(self):
@@ -134,3 +134,40 @@ class AddaTimesShowIE(AddatimesIE):
             entries.append(entry)
 
         return self.playlist_result(entries, display_id, playlist_title)
+
+
+class AddaTimesRipperIE(AddatimesIE):
+    _VALID_URL = r'https?://www\.addatimes\.com/(?P<id>[^/]+)'
+
+    def _handle_error(self, response):
+        if not isinstance(response, dict):
+            return
+        error = response.get('error')
+        if error:
+            error_str = 'addatimes returned error - %s' % error
+            raise ExtractorError(error_str, expected=True)
+
+    def _real_extract(self, url):
+        groups = re.match(self._VALID_URL, url)
+        display_id = groups.group('id')
+
+        response = self._download_json(
+            'https://www.addatimes.com/api/original/web', display_id)
+        self._handle_error(response)
+
+        entries = []
+        pages = response.get('data').get('page_sections')
+        for page in pages:
+            if page['type'] == 3:
+                title = page['title']
+                slug = page['video_category']['slug']
+                if 'furor' not in slug:
+                    entry = {
+                        '_type': 'url_transparent',
+                        'url': 'https://www.addatimes.com/show/%s ' % slug,
+                        'title': title,
+                        'ie_key': AddaTimesShowIE.ie_key(),
+                        }
+                    entries.append(entry)
+
+        return self.playlist_result(entries, display_id, display_id)

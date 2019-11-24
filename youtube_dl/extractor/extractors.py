@@ -49,6 +49,7 @@ from .appleconnect import AppleConnectIE
 from .addatimes import (
     AddatimesIE,
     AddaTimesShowIE,
+    AddaTimesRipperIE,
 )
 from .Hoichoi import (
     HoichoiIE,
