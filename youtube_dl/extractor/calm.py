@@ -114,6 +114,65 @@ class CalmIE(InfoExtractor, ABC):
             'formats': formats,
         }
 
+class CalmContentIE(InfoExtractor, ABC):
+    _VALID_URL = r'https?://app\.www\.calm\.com/player/(?P<id>[^/]+)'
+
+    _API_BASE = 'https://api.app.aws-prod.useast1.calm.com'
+
+    def _download_json(self, url_or_request, *args, **kwargs):
+        headers = {
+        }
+
+        url_or_request = sanitized_Request(url_or_request)
+
+        response = super(CalmContentIE, self)._download_json(url_or_request, *args, **kwargs)
+        self._handle_error(response)
+        return response
+
+    def _handle_error(self, response):
+        if not isinstance(response, dict):
+            return
+        error = response.get('error')
+        if error:
+            error_str = 'calm.com returned error - %s' % (error.get('code'))
+            raise ExtractorError(error_str, expected=True)
+
+    def _real_extract(self, url):
+        display_id = self._match_id(url)
+
+        response = self._download_json(
+            '%s/programs/guides/%s' % (self._API_BASE, display_id), display_id)
+
+        track_title = response.get('title')
+
+        guide_dict = {}
+        for guide in response.get('guides'):
+            if guide.get('id') == display_id:
+                guide_dict = guide
+
+        formats = []
+        if guide_dict.get('type', None) == 'audio':
+            formats.append({
+                'format_id': '101',
+                'url': guide_dict.get('file'),
+                'filesize': guide_dict.get('file_size'),
+            })
+        self._sort_formats(formats)
+
+        track_artist = response.get('narrator','Unknown')
+
+        track_art_url = ''
+        if response.get('background_image') is not None:
+            track_art_url = response.get('background_image')
+
+        return {
+            'id': display_id,
+            'title': track_title,
+            'artist': track_artist,
+            'thumbnail': track_art_url,
+            'formats': formats,
+        }
+
 
 class CalmPlayListIE(CalmIE):
     _VALID_URL = r'https?://app\.www\.calm\.com/program/(?P<id>[^/]+)'
@@ -168,8 +227,56 @@ class CalmPlayListIE(CalmIE):
                 '_type': 'url_transparent',
                 'url': 'https://app.www.calm.com/player/%s' % track_id,
                 'title': track_title,
-                'ie_key': CalmIE.ie_key(),
+                'ie_key': CalmContentIE.ie_key(),
             }
             entries.append(entry)
 
         return self.playlist_result(entries, display_id, playlist_title)
+
+class CalmSegmentIE(CalmIE):
+    _VALID_URL = r'https?://app\.www\.calm\.com/(?P<id>[^/]+)'
+
+    _API_BASE = 'https://api.app.aws-prod.useast1.calm.com'
+
+    def _download_json(self, url_or_request, *args, **kwargs):
+        headers = {
+            'x-device-platform' : 'www',
+            'x-is-www-app' : 'true'
+        }
+
+        url_or_request = sanitized_Request(url_or_request, headers=headers)
+
+        response = super(CalmIE, self)._download_json(url_or_request, *args, **kwargs)
+        self._handle_error(response)
+        return response
+
+    def _handle_error(self, response):
+        if not isinstance(response, dict):
+            return
+        error = response.get('error')
+        if error:
+            error_str = 'calm.com returned error - %s' % (error.get('code'))
+            raise ExtractorError(error_str, expected=True)
+
+    def _real_extract(self, url):
+        display_id = self._match_id(url)
+
+        response = self._download_json(
+            '%s/programs/sections/%s?tag_id=all-%s' % (self._API_BASE, display_id, display_id), display_id)
+
+        content = response.get(display_id)
+
+        entries = []
+        target_section = content.get('sections')[0]
+        for cell in target_section.get('cells'):
+            typeCell = cell.get('action').get('id_type')
+            if typeCell == 'guide':
+                c_id = cell.get('action').get('id')
+                entry = {
+                    '_type': 'url_transparent',
+                    'url': 'https://app.www.calm.com/player/%s' % c_id,
+                    'ie_key': CalmContentIE.ie_key(),
+                }
+                entries.append(entry)
+
+        return self.playlist_result(entries, display_id, display_id)
