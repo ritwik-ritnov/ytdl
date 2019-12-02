@@ -154,8 +154,9 @@ from .buzzfeed import BuzzFeedIE
 from .byutv import BYUtvIE
 from .c56 import C56IE
 from .calm import (
-    CalmIE,
+    CalmContentIE,
     CalmPlayListIE,
+    CalmSegmentIE,
 )
 from .camdemy import (
     CamdemyIE,
