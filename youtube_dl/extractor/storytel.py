@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from abc import ABC
+import time
 
 from .common import InfoExtractor
 from ..utils import (
@@ -50,7 +51,7 @@ class StorytelIE(InfoExtractor, ABC):
                 self._JWT_TOKEN = cookie.value
 
         response = self._download_json(
-            '%s/api/getBookInfoForContent.action?bookId=%s' % (self._API_BASE, display_id), display_id)
+            '%s/api/getBookInfoForContent.action?bookId=%s' % (self._API_BASE, display_id), display_id, note='getting book info')
 
         a_id = response.get('slb').get('book').get('AId')
         title = response.get('slb').get('book').get('name')
@@ -62,9 +63,11 @@ class StorytelIE(InfoExtractor, ABC):
 
         response_headers = ""
         if (a_id is not None):
+            print("sleeping 60 sec")
+            time.sleep(60)
             streamUrl = '%s/mp3streamRangeReq/?startposition=0&token=%s&programId=%s' % (
                 self._API_BASE, self._TOKEN, a_id)
-            response_headers = super(StorytelIE, self)._request_webpage(streamUrl, a_id)
+            response_headers = super(StorytelIE, self)._request_webpage(streamUrl, a_id, note='getting actual url')
 
         content_url = response_headers.url
 
