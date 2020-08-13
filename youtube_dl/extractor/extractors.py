@@ -69,7 +69,8 @@ from .ard import (
 )
 
 from .storytel import (
-    StorytelIE
+    StorytelIE,
+    StorytelAuthorIE,
 )
 
 from .arte import (
