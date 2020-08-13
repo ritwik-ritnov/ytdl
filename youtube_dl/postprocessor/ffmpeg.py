@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import io
 import os
+import logging
 import subprocess
 import time
 import re
@@ -450,11 +451,13 @@ class FFmpegMetadataPP(FFmpegPostProcessor):
         add('title', ('track', 'title'))
         add('date', 'upload_date')
         add(('description', 'comment'), 'description')
-        add('purl', 'webpage_url')
+        # add('purl', 'webpage_url')
+        add("Recorded date", 'release_date')
         add('track', 'track_number')
         add('artist', ('artist', 'creator', 'uploader', 'uploader_id'))
         add('genre')
         add('album')
+        add('composer')
         add('album_artist')
         add('disc', 'disc_number')
 
@@ -644,3 +647,52 @@ class FFmpegSubtitlesConvertorPP(FFmpegPostProcessor):
                 }
 
         return sub_filenames, info
+
+class FFmpegSplitByTracksPP(FFmpegPostProcessor):
+        log = logging.getLogger(__name__)
+
+        def _ffmpeg_time_string(self, seconds):
+            t_minutes, t_seconds = divmod(seconds, 60)
+            t_hours, t_minutes = divmod(t_minutes, 60)
+            t_string = '{hrs:02}:{min:02}:{sec:02}'.format(hrs=t_hours, min=t_minutes, sec=t_seconds)
+            return t_string
+
+        def _build_track_name(self, chapter, information):
+            track_title = chapter.get("title", "")
+            track_title = encodeFilename(track_title)
+            track_title = track_title.replace("/", "_")
+
+            prefix, sep, ext = information['filepath'].rpartition('.')
+            track_name = "%s - %s%s%s" % (prefix, track_title, sep, ext)
+
+            return track_name
+
+        def _extract_track_from_chapter(self, chapter, information, total_chapters):
+            start = int(chapter['start_time'])
+            end = int(chapter['end_time'])
+            duration = end - start
+
+            start = self._ffmpeg_time_string(start)
+            duration = self._ffmpeg_time_string(duration)
+
+            destination = self._build_track_name(chapter, information)
+
+            information['Track name/Position'] = chapter.get('title')
+
+            self.run_ffmpeg(information['filepath'], destination, ['-c', 'copy', '-ss', start, '-t', duration,
+                                                                   '-metadata', 'Track name/Position='+chapter.get('title'),
+                                                                   '-metadata', 'Track name/Total='+ total_chapters.__str__()])
+
+        def run(self, information):
+            chapters = information.get('chapters', [])
+            if not isinstance(chapters, list) or len(chapters) == 0:
+                self.log.warning('[ffmpeg] There are no tracks to extract')
+                return [], information
+
+            for idx, chapter in enumerate(chapters):
+                try:
+                    self._extract_track_from_chapter(chapter, information, len(chapters))
+                except Exception as e:
+                    self.log.error('Splitting track failed: ' + repr(e))
+
+            return [], information

@@ -67,6 +67,11 @@ from .ard import (
     ARDIE,
     ARDMediathekIE,
 )
+
+from .storytel import (
+    StorytelIE
+)
+
 from .arte import (
     ArteTvIE,
     ArteTVPlus7IE,
