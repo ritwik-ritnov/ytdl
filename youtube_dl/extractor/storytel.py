@@ -63,8 +63,8 @@ class StorytelIE(InfoExtractor, ABC):
 
         response_headers = ""
         if (a_id is not None):
-            print("sleeping 60 sec")
-            time.sleep(60)
+            print("sleeping 30 sec")
+            time.sleep(30)
             streamUrl = '%s/mp3streamRangeReq/?startposition=0&token=%s&programId=%s' % (
                 self._API_BASE, self._TOKEN, a_id)
             response_headers = super(StorytelIE, self)._request_webpage(streamUrl, a_id, note='getting actual url')
