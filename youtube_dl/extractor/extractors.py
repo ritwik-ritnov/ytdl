@@ -72,6 +72,9 @@ from .storytel import (
     StorytelIE,
     StorytelAuthorIE,
 )
+from .envision import (
+    EnvisionIE,
+)
 
 from .arte import (
     ArteTvIE,
