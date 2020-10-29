@@ -24,9 +24,9 @@ class StorytelIE(InfoExtractor, ABC):
         },
     }]
 
-    _API_BASE = 'https://www.storytel.in'
-    _TOKEN = 'INSERT in cookies'
-    _JWT_TOKEN = 'INSERT in cookies'
+    _API_BASE = 'https://www.storytel.com/nl/nl'
+    _TOKEN = 'szMUez5c_8DvNBJksksK4HQeMbkB8392'
+    _JWT_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMDE1MTk1NyIsInNjb3BlIjpbInN0b3J5dGVsOnVzZXIiXSwicmZ0Ijoic3pNVWV6NWNfOER2TkJKa3Nrc0s0SFFlTWJrQjgzOTIiLCJpYXQiOjE1OTg5NzEwNjMsInNleHAiOjE1OTg5NzEzNjMsImV4cCI6MTYwMjQyNzA2MywiaXNzIjoiU1RIUCIsImNpZCI6IjIwMTUxOTU3IiwiZW1haWwiOiJiYUBjYS5jb20iLCJzdG9yZSI6IlNUSFAtSU4iLCJjb3VudHJ5SWQiOiIxNCJ9.HKOgo0RMI1CCV0Rc1QOPhyvni9pnXtq78bAXf2SCDO0'
 
     def _download_json(self, url_or_request, *args, **kwargs):
         response = super(StorytelIE, self)._download_json(url_or_request, *args, **kwargs)
@@ -44,14 +44,9 @@ class StorytelIE(InfoExtractor, ABC):
     def _real_extract(self, url):
         display_id = self._match_id(url)
 
-        for cookie in self._downloader.cookiejar:
-            if cookie.name == 'token':
-                self._TOKEN = cookie.value
-            elif cookie.name == 'jwt':
-                self._JWT_TOKEN = cookie.value
-
-        response = self._download_json(
-            '%s/api/getBookInfoForContent.action?bookId=%s' % (self._API_BASE, display_id), display_id, note='getting book info')
+        url = '%s/api/getBookInfoForContent.action?bookId=%s' % (self._API_BASE, display_id)
+        print(url)
+        response = self._download_json(url,display_id, note = 'getting book info')
 
         a_id = response.get('slb').get('book').get('AId')
         title = response.get('slb').get('book').get('name')

@@ -54,25 +54,34 @@ class EnvisionIE(InfoExtractor, ABC):
             thumb = None
             if pack.get('image') is not None:
                 thumb = self._FILE_BASE + pack.get('image')
-            sessions = pack.get('sessions')
-
-            counter = 1
-            for session in sessions:
-                track_title = session.get('name')
-                file_ep = session.get('file')
-                if file_ep != '':
-                    file_url = self._FILE_BASE  + session.get('file')
-                    track_num = counter.__str__() + '/' +len(sessions).__str__()
-                    entry = {
-                        '_type': 'url_transparent',
-                        'url': file_url,
-                        'thumbnail': thumb,
-                        'album': pack_title,
-                        'track_number': track_num,
-                        'title': track_title,
-                        'artist': 'EnVision'
+                # sessions = pack.get('sessions')
+                entry = {
+                    '_type': 'url_transparent',
+                    'url': "https://envision.app/uploads/sessions/file_toughdaysingle-finaledits.mp3",
+                    'thumbnail': thumb,
+                    'album': pack_title,
+                    'title':pack_title,
+                    'artist': 'EnVision'
                     }
-                    entries.append(entry)
-                    counter+=1
+                entries.append(entry)
+
+            # counter = 1
+            # for session in sessions:
+            #     track_title = session.get('name')
+            #     file_ep = session.get('file')
+            #     if file_ep != '':
+            #         file_url = self._FILE_BASE  + session.get('file')
+            #         track_num = counter.__str__() + '/' +len(sessions).__str__()
+            #         entry = {
+            #             '_type': 'url_transparent',
+            #             'url': file_url,
+            #             'thumbnail': thumb,
+            #             'album': pack_title,
+            #             'track_number': track_num,
+            #             'title': track_title,
+            #             'artist': 'EnVision'
+            #         }
+            #         entries.append(entry)
+            #         counter+=1
 
         return self.playlist_result(entries, '101', 'EnVision - Daily Visualization [2020]')
