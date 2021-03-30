@@ -24,9 +24,9 @@ class StorytelIE(InfoExtractor, ABC):
         },
     }]
 
-    _API_BASE = 'https://www.storytel.com/nl/nl'
-    _TOKEN = 'szMUez5c_8DvNBJksksK4HQeMbkB8392'
-    _JWT_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMDE1MTk1NyIsInNjb3BlIjpbInN0b3J5dGVsOnVzZXIiXSwicmZ0Ijoic3pNVWV6NWNfOER2TkJKa3Nrc0s0SFFlTWJrQjgzOTIiLCJpYXQiOjE1OTg5NzEwNjMsInNleHAiOjE1OTg5NzEzNjMsImV4cCI6MTYwMjQyNzA2MywiaXNzIjoiU1RIUCIsImNpZCI6IjIwMTUxOTU3IiwiZW1haWwiOiJiYUBjYS5jb20iLCJzdG9yZSI6IlNUSFAtSU4iLCJjb3VudHJ5SWQiOiIxNCJ9.HKOgo0RMI1CCV0Rc1QOPhyvni9pnXtq78bAXf2SCDO0'
+    _API_BASE = 'https://www.storytel.com/in/en'
+    _TOKEN = 'LB3Rhvvfi2hqIlkONQtQasiRfkOB36CB'
+    _JWT_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTExNjkyNyIsInNjb3BlIjpbInN0b3J5dGVsOnVzZXIiXSwicmZ0IjoiTEIzUmh2dmZpMmhxSWxrT05RdFFhc2lSZmtPQjM2Q0IiLCJpYXQiOjE2MTU2NTM5MTIsInNleHAiOjE2MTU2NTQyMTIsImV4cCI6MTYxOTEwOTkxMiwiaXNzIjoiU1RIUCIsImNpZCI6IjI1MTE2OTI3IiwiZW1haWwiOiJhZ2FwZS5vdmFkaWFAZmluZWxvYW5zLm9yZyIsInN0b3JlIjoiU1RIUC1TRyIsImNvdW50cnlJZCI6IjIxNSIsImJhc2VQcm9kdWN0cyI6WyJVTkxJTUlURUQiXX0.HmLEuGbnmSGeILA8dgkISGcsU_7zRYEbV1RzOoRnUlI'
 
     def _download_json(self, url_or_request, *args, **kwargs):
         response = super(StorytelIE, self)._download_json(url_or_request, *args, **kwargs)

@@ -56,6 +56,14 @@ from .Hoichoi import (
     HoichoiShowIE,
     HoichoiShowsRipperIE,
 )
+
+from .nuefliks import (
+    NuefliksEpisodeIE,
+)
+
+from .pnsm import (
+    PnsmIE,
+)
 from .appletrailers import (
     AppleTrailersIE,
     AppleTrailersSectionIE,
