@@ -6,6 +6,8 @@ from abc import ABC
 from bs4 import BeautifulSoup
 
 from .common import InfoExtractor
+import urllib
+from urllib.parse import urlparse
 
 
 class XnnmIE(InfoExtractor, ABC):
@@ -57,6 +59,8 @@ class XnnmIE(InfoExtractor, ABC):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
         }
         for link in res:
+            link = link.text.replace(" ", "%20")
+            print(link)
             entry = {
                 '_type': 'url_transparent',
                 'url': link,
