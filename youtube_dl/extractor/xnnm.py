@@ -60,7 +60,6 @@ class XnnmIE(InfoExtractor, ABC):
         }
         for link in res:
             link = link.replace(" ", "%20")
-            print(link)
             entry = {
                 '_type': 'url_transparent',
                 'url': link,
