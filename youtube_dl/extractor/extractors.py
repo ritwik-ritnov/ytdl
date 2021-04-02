@@ -51,6 +51,9 @@ from .addatimes import (
     AddaTimesShowIE,
     AddaTimesRipperIE,
 )
+from .xnnm import (
+    XnnmIE,
+)
 from .Hoichoi import (
     HoichoiIE,
     HoichoiShowIE,
