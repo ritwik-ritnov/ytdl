@@ -32,7 +32,7 @@ class PnsmIE(InfoExtractor, ABC):
         print(url)
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0',
-            'Authorization': 'Basic UmFsbHk5OTpwdWcxMDY='
+            'Authorization': 'Basic TGV6YmlhbjEyMzQ1Omxlc2JpYW5i'
         }
         response = self._download_webpage(url, display_id, headers=headers)
 
