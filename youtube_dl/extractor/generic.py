@@ -2197,8 +2197,6 @@ class GenericIE(InfoExtractor):
         }
 
     def _real_extract(self, url):
-        print("sleeping 10s")
-        time.sleep(10)
         if url.startswith('//'):
             return self.url_result(self.http_scheme() + url)
 
